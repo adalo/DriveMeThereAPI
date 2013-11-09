@@ -1,19 +1,19 @@
 <?php
 
 /**
- * Sample news controller.
+ * Sample rideRequests controller.
  * 
  * @package api-framework
  * @author  Martin Bean <martin@martinbean.co.uk>
  */
-class NewsController extends AbstractController
+class RideRequestsController extends AbstractController
 {
     /**
-     * News file.
+     * RideRequests file.
      *
      * @var variable type
      */
-    protected $articles_file = './data/news.txt';
+    protected $articles_file = './data/rideRequests.txt';
     
     /**
      * GET method.
@@ -57,7 +57,7 @@ class NewsController extends AbstractController
                 $articles[] = $article;
                 $this->writeArticles($articles);
                 header('HTTP/1.1 201 Created');
-                header('Location: /news/'.$id);
+                header('Location: /rideRequests/'.$id);
                 return null;
             break;
         }
@@ -77,18 +77,20 @@ class NewsController extends AbstractController
         
         $con=mysql_connect("$host", "$username", "$password")or die("cannot connect");
         mysql_select_db("$db_name")or die("cannot select DB");
-        $sql = "SELECT * FROM News";
+        $sql = "SELECT * FROM RideRequests";
         $result = mysql_query($sql);
         $json = array();
             //  $result;
           
         if(mysql_num_rows($result)){
-            while($row=mysql_fetch_assoc($result)){
-            $json['News'][]=$row;
+            while($row=mysql_fetch_assoc($result)){ //for each row returned, create position in array
+            $id = array_shift($row);
+            $json[$id][]=$row;
             }
         }
         mysql_close($con);
-        $articles = $json; 
+      //  $articles = $json;
+
         
        /*  $articles = unserialize(file_get_contents($this->articles_file));
         if (empty($articles)) {
@@ -102,7 +104,7 @@ class NewsController extends AbstractController
             );
             $this->writeArticles($articles);
         } */
-        return $articles;
+        return $json;
     }
     
     /**
